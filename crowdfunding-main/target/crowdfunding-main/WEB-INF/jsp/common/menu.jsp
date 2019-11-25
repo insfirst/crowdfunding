@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<div class="col-sm-3 col-md-2 sidebar">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%--<div class="col-sm-3 col-md-2 sidebar">
 			<div class="tree">
 				<ul style="padding-left:0px;" class="list-group">
 					<li class="list-group-item tree-closed">
@@ -62,4 +64,30 @@
 					</li>
 				</ul>
 			</div>
-        </div>
+        </div>--%>
+<div class="col-sm-3 col-md-2 sidebar">
+	<div class="tree">
+		<ul style="padding-left:0px;" class="list-group">
+				<c:if test="${fn:length(sessionScope.root)>0}">
+					<c:forEach items="${sessionScope.root}" var="parent">
+						<c:forEach items="${parent.children}" var="innerChildren">
+							<li class="list-group-item tree-closed">
+								<span><i class="${innerChildren.icon}"></i> ${innerChildren.name} <span class="badge" style="float:right">${fn:length(innerChildren.children)}</span></span>
+								<c:if test="${fn:length(innerChildren.children)>0}">
+									<c:forEach items="${innerChildren.children}" var="child">
+										<ul style="margin-top:10px;display:none;">
+											<li style="height:30px;">
+												<a href="${APP_PATH}/${child.url}"><i class="${child.icon}"></i> ${child.name}</a>
+											</li>
+										</ul>
+									</c:forEach>
+								</c:if>
+
+							</li>
+						</c:forEach>
+					</c:forEach>
+				</c:if>
+
+		</ul>
+	</div>
+</div>

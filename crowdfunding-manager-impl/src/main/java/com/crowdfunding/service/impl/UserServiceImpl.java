@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.crowdfunding.bean.Permission;
 import com.crowdfunding.bean.Role;
 import com.crowdfunding.bean.User;
 import com.crowdfunding.exception.LoginFailException;
@@ -110,5 +111,10 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public int deleteUserRoleRelationship(Integer userid,Data data) {
 		return userMapper.deleteUserRoleRelationship(userid,data);
+	}
+
+	@Override
+	public List<Permission> queryPermissionsByUser(Integer id) {
+		return userMapper.queryPermissionsByUser(id);
 	}
 }

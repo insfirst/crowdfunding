@@ -1,5 +1,6 @@
 package com.crowdfunding.service;
 
+import com.crowdfunding.bean.Permission;
 import com.crowdfunding.bean.Role;
 import com.crowdfunding.bean.User;
 import com.crowdfunding.util.Page;
@@ -43,5 +44,6 @@ public interface UserService {
 
 
 	int deleteUserRoleRelationship(Integer userid, Data data);
-	
+
+    List<Permission> queryPermissionsByUser(Integer id);
 }

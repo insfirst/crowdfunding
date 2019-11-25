@@ -1,10 +1,13 @@
 package com.crowdfunding.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import com.crowdfunding.bean.Permission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +33,27 @@ public class DispatcherController {
 		return "login";
 	}
 	@RequestMapping("/main")
-	public String main() {
+	public String main(HttpSession session) {
+		List<Permission>root=new ArrayList<>();//根节点
+		User user=(User)session.getAttribute(Const.LOGIN_USER);
+		List<Permission> permissions=userService.queryPermissionsByUser(user.getId());
+		//所有节点
+		Map<Integer,Permission>permissionMap=new HashMap<>();
+		for (Permission childPermission :
+				permissions) {
+			permissionMap.put(childPermission.getId(),childPermission);
+		}
+		for (Permission permission :
+				permissions) {
+			Permission child=permission;//子节点
+			if(permission.getPid()==null){
+				root.add(permission);
+			}else{
+				Permission parent=permissionMap.get(child.getPid());//获取当前节点的父节点
+				parent.getChildren().add(child);//设置父子关系
+			}
+		}
+		session.setAttribute("root",root);
 		return "main";
 	}
 	@RequestMapping("/logout")

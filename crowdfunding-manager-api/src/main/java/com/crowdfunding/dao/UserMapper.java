@@ -1,6 +1,7 @@
 package com.crowdfunding.dao;
 
 
+import com.crowdfunding.bean.Permission;
 import com.crowdfunding.bean.Role;
 import com.crowdfunding.bean.User;
 import com.crowdfunding.vo.Data;
@@ -39,4 +40,6 @@ public interface UserMapper {
 	int deleteUserRoleRelationship(@Param("userid") Integer userid, @Param("data") Data data);
 
     int deleteBatchUserByIds(@Param("ids")Integer[] ids);
+
+    List<Permission> queryPermissionsByUser(Integer id);
 }
