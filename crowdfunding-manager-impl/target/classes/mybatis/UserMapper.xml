@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crowdfunding.dao.UserMapper">
+  <resultMap id="BaseResultMap" type="com.crowdfunding.bean.User">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="loginacct" jdbcType="VARCHAR" property="loginacct" />
+    <result column="userpswd" jdbcType="CHAR" property="userpswd" />
+    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="createtime" jdbcType="CHAR" property="createtime" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteBatchUserByIds">
+    delete from t_user
+    where id IN
+    <foreach collection="ids" open="(" separator="," close=")" item="id">#{id}</foreach>
+  </delete>
+  <delete id="deleteByPrimaryKeyByData">
+    delete from t_user
+    where id IN
+    <foreach collection="datas" open="(" separator="," close=")" item="user">#{user.id}</foreach>
+  </delete>
+  <insert id="insert" parameterType="com.crowdfunding.bean.User">
+    insert into t_user (id, loginacct, userpswd, 
+      username, email, createtime
+      )
+    values (#{id,jdbcType=INTEGER}, #{loginacct,jdbcType=VARCHAR}, #{userpswd,jdbcType=CHAR}, 
+      #{username,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{createtime,jdbcType=CHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.crowdfunding.bean.User">
+    update t_user
+    set loginacct = #{loginacct,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select id, loginacct, userpswd, username, email, createtime
+    from t_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, loginacct, userpswd, username, email, createtime
+    from t_user
+  </select>
+  <select id="queryLogin" parameterType="map" resultMap="BaseResultMap">
+  	select id, loginacct, userpswd, username, email, createtime
+    from t_user where loginacct=#{loginacct} and userpswd=#{userpswd}
+  </select>
+  <select id="queryList"  resultMap="BaseResultMap">
+  	select id, loginacct, userpswd, username, email, createtime
+    from t_user 
+    <where>
+    	<if test="queryText!=null">and loginacct like CONCAT("%",#{queryText},"%")</if>
+    </where>
+    order by createtime desc
+    limit #{startIndex},#{pagesize}
+  </select>
+  <select id="queryCount" resultType="int">
+  	select  count(*)   from t_user
+  	<where>
+    	<if test="queryText!=null">and loginacct like CONCAT("%",#{queryText},"%")</if>
+    </where>
+  </select>
+  
+  <select id="querAllRole" resultType="Role">
+  	select * from t_role
+  </select>
+  
+  <select id="queryRoleUserid" parameterType="int" resultType="int">
+  		select roleid from t_user_role where userid=#{id}
+  </select>
+  <insert id="saveUserRoleRelationship">
+  	<foreach collection="data.ids" item="roleid" separator=";">
+  		insert into t_user_role(userid,roleid)values(#{userid},#{roleid})
+  	</foreach>
+  </insert>
+  <delete id="deleteUserRoleRelationship">
+  delete from t_user_role where userid=#{userid} and roleid in
+  	<foreach collection="data.ids" item="roleid" open="(" close=")" separator=",">
+  		#{roleid}
+  	</foreach>
+  </delete>
+</mapper>
