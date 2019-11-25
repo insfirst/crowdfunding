@@ -34,7 +34,7 @@ public class DispatcherController {
 	}
 	@RequestMapping("/main")
 	public String main(HttpSession session) {
-		List<Permission>root=new ArrayList<>();//根节点
+		Permission root=null;//根节点
 		User user=(User)session.getAttribute(Const.LOGIN_USER);
 		List<Permission> permissions=userService.queryPermissionsByUser(user.getId());
 		//所有节点
@@ -47,7 +47,7 @@ public class DispatcherController {
 				permissions) {
 			Permission child=permission;//子节点
 			if(permission.getPid()==null){
-				root.add(permission);
+				root=permission;
 			}else{
 				Permission parent=permissionMap.get(child.getPid());//获取当前节点的父节点
 				parent.getChildren().add(child);//设置父子关系
