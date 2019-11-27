@@ -1,9 +1,6 @@
 package com.crowdfunding.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpSession;
 
@@ -33,27 +30,7 @@ public class DispatcherController {
 		return "login";
 	}
 	@RequestMapping("/main")
-	public String main(HttpSession session) {
-		Permission root=null;//根节点
-		User user=(User)session.getAttribute(Const.LOGIN_USER);
-		List<Permission> permissions=userService.queryPermissionsByUser(user.getId());
-		//所有节点
-		Map<Integer,Permission>permissionMap=new HashMap<>();
-		for (Permission childPermission :
-				permissions) {
-			permissionMap.put(childPermission.getId(),childPermission);
-		}
-		for (Permission permission :
-				permissions) {
-			Permission child=permission;//子节点
-			if(permission.getPid()==null){
-				root=permission;
-			}else{
-				Permission parent=permissionMap.get(child.getPid());//获取当前节点的父节点
-				parent.getChildren().add(child);//设置父子关系
-			}
-		}
-		session.setAttribute("root",root);
+	public String main() {
 		return "main";
 	}
 	@RequestMapping("/logout")
@@ -86,6 +63,30 @@ public class DispatcherController {
 			User user=userService.queryLogin(paramMap);
 			session.setAttribute(Const.LOGIN_USER, user);
 			result.setSuccess(true);
+			//----
+			Permission root=null;//根节点
+			List<Permission> permissions=userService.queryPermissionsByUser(user.getId());
+			//所有节点
+			Map<Integer,Permission>permissionMap=new HashMap<>();
+			Set<String>myUris=new HashSet<>();
+			for (Permission childPermission :
+					permissions) {
+				permissionMap.put(childPermission.getId(),childPermission);
+				myUris.add("/"+childPermission.getUrl());
+			}
+			session.setAttribute(Const.MY_URIS,myUris);
+			for (Permission permission :
+					permissions) {
+				Permission child=permission;//子节点
+				if(permission.getPid()==null){
+					root=permission;
+				}else{
+					Permission parent=permissionMap.get(child.getPid());//获取当前节点的父节点
+					parent.getChildren().add(child);//设置父子关系
+				}
+			}
+			session.setAttribute("root",root);
+			//--
 		} catch (Exception e) {
 			result.setSuccess(false);
 			result.setMessage(e.getMessage());
