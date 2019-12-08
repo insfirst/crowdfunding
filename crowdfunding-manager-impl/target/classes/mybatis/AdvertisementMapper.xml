@@ -37,4 +37,19 @@
     select id, name, iconpath, status, url, userid
     from t_advertisement
   </select>
+  <select id="queryCount" resultType="int">
+    select count(1)
+    from t_advertisement
+    <where>
+      <if test="queryText!=null">and name like CONCAT("%",#{queryText},"%")</if>
+    </where>
+  </select>
+  <select id="queryAdvertsByPage" resultMap="BaseResultMap">
+    select id, name, iconpath, status, url, userid
+    from t_advertisement
+    <where>
+      <if test="queryText!=null">and name like CONCAT("%",#{queryText},"%")</if>
+    </where>
+    limit #{startIndex},#{pagesize}
+  </select>
 </mapper>

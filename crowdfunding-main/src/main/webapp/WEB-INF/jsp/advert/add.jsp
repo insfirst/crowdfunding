@@ -100,6 +100,8 @@
     <script src="${APP_PATH }/bootstrap/js/bootstrap.min.js"></script>
 	<script src="${APP_PATH }/script/docs.min.js"></script>
 	<script src="${APP_PATH }/jquery/layer/layer.js"></script>
+	<script src="${APP_PATH }/jquery/jquery-form/jquery.form.js"></script>
+
         <script type="text/javascript">
             $(function () {
 			    $(".list-group-item").click(function(){
@@ -113,8 +115,27 @@
 					}
 				});
 				$("#saveBtn").click(function(){
-					$("#advertForm").attr("action","${APP_PATH}/advert/doAdd.do");
-					$("#advertForm").submit();
+					/*$("#advertForm").attr("action","${APP_PATH}/advert/doAdd.do");
+					$("#advertForm").submit();*/
+					var options={
+						url:"${APP_PATH}/advert/doAdd.do",
+						beforeSubmit:function(){
+							loadIndex=layer.msg('数据保存中',{icon:6});
+							return true;
+						},
+						success:function (result) {
+							layer.close(loadIndex);
+							if(result.success){
+								layer.msg("广告数据保存成功！",{time:1000,icon:6});
+								window.location.href="${APP_PATH}/advert/index.htm";
+							}else{
+								layer.msg("广告数据保存失败！",{time:1000,icon:5,shift:6})
+							}
+						}
+
+					};
+					$("#advertForm").ajaxSubmit(options);//异步提交
+					return true ;
 				});
 
 			});
